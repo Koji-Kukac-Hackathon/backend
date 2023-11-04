@@ -1,9 +1,11 @@
 package config
 
 import (
+	"log"
 	"os"
 	"strconv"
 
+	"github.com/joho/godotenv"
 	flag "github.com/spf13/pflag"
 )
 
@@ -19,6 +21,10 @@ type appConfig struct {
 var Config = appConfig{}
 
 func (appConfig *appConfig) Init() {
+	if err := godotenv.Load(); err != nil {
+		log.Println("Error loading .env file: ", err)
+	}
+
 	envPort, err := strconv.ParseInt(os.Getenv("PORT"), 0, 32)
 	if err != nil || envPort == 0 {
 		envPort = defaultPort
