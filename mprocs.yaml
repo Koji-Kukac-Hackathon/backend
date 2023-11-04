@@ -1,0 +1,6 @@
+---
+procs:
+  app:
+    cmd: ["make", "dev/watch"]
+  caddy:
+    cmd: ["doas", "caddy", "run"]
