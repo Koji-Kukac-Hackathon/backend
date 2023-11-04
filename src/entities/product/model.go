@@ -1,8 +1,8 @@
-package model
+package product
 
 import "gorm.io/gorm"
 
-type Product struct {
+type Model struct {
 	gorm.Model
 
 	Code  string
