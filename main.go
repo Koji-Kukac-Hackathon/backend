@@ -2,60 +2,17 @@ package main
 
 import (
 	"fmt"
-	"log"
-	"os"
-	"strconv"
 
-	"github.com/joho/godotenv"
-	flag "github.com/spf13/pflag"
+	"zgrabi-mjesto.hr/backend/src/config"
 	"zgrabi-mjesto.hr/backend/src/entities/product"
 	"zgrabi-mjesto.hr/backend/src/providers/database"
+	"zgrabi-mjesto.hr/backend/src/server"
 )
 
-type appConfig struct {
-	Port  int
-	Host  string
-	DbUrl string
-}
-
-const defaultPort = 3000
-const defaultHost = "0.0.0.0"
-
-func loadConfig() appConfig {
-	envPort, err := strconv.ParseInt(os.Getenv("PORT"), 0, 32)
-	if err != nil || envPort == 0 {
-		envPort = defaultPort
-	}
-
-	envHost := os.Getenv("HOST")
-	if envHost == "" {
-		envHost = defaultHost
-	}
-
-	var port int
-	var host string
-	var database_url string
-
-	flag.IntVarP(&port, "port", "p", int(envPort), "Set the port on which the server will run")
-	flag.StringVarP(&host, "host", "h", envHost, "Set the host to which the server will bind")
-	flag.StringVar(&database_url, "database_url", os.Getenv("DATABASE_URL"), "Set the database url")
-	flag.Parse()
-
-	return appConfig{
-		Port:  port,
-		Host:  host,
-		DbUrl: database_url,
-	}
-}
-
 func main() {
-	if err := godotenv.Load(); err != nil {
-		log.Println("Error loading .env file: ", err)
-	}
+	config.Config.Init()
 
-	conf := loadConfig()
-
-	fmt.Printf("Config: %+v\n", conf)
+	fmt.Printf("Config: %+v\n", config.Config)
 
 	err := database.DatabaseProvider().Register()
 	if err != nil {
@@ -79,4 +36,6 @@ func main() {
 
 	// Delete - delete product
 	db.Delete(&dbProduct, 1)
+
+	server.Run()
 }
