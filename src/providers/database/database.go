@@ -8,6 +8,7 @@ import (
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
+
 	"zgrabi-mjesto.hr/backend/src/entities/product"
 )
 
@@ -16,6 +17,10 @@ type databaseProvider struct {
 }
 
 var db_ = databaseProvider{}
+
+func migrate() databaseProvider {
+	return db_
+}
 
 func DatabaseProvider() databaseProvider {
 	return db_
@@ -61,6 +66,7 @@ func (p databaseProvider) Register() (err error) {
 	if err != nil {
 		return err
 	}
+
 	db_.log("Done with migrations")
 
 	return nil
