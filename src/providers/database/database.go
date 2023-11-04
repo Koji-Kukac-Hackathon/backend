@@ -8,8 +8,6 @@ import (
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
-
-	"zgrabi-mjesto.hr/backend/src/entities/product"
 )
 
 type databaseProvider struct {
@@ -59,16 +57,6 @@ func (p databaseProvider) Register() (err error) {
 	if err != nil {
 		return err
 	}
-
-	db_.log("Running the migrations...")
-	err = db_.conn.AutoMigrate(
-		&product.Model{},
-	)
-	if err != nil {
-		return err
-	}
-
-	db_.log("Done with migrations")
 
 	return nil
 }
