@@ -24,6 +24,7 @@ func main() {
 	product.Service.Test()
 
 	// Read
+
 	var dbProduct product.Model
 	db.First(&dbProduct, 1)                 // find product with integer primary key
 	db.First(&dbProduct, "code = ?", "D42") // find product with code D42
