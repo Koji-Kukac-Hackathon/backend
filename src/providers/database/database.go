@@ -50,11 +50,12 @@ func (p databaseProvider) Register() (err error) {
 	db_.conn, err = gorm.Open(
 		mysql.Open(os.Getenv("DATABASE_URL")),
 		&gorm.Config{
-			Logger: logger_,
+			Logger:                                   logger_,
+			DisableForeignKeyConstraintWhenMigrating: true,
 		},
 	)
 
-	db_.log("Connected to PostgreSQL")
+	db_.log("Connected to to database")
 	if err != nil {
 		return err
 	}
