@@ -13,12 +13,8 @@ define LDFLAGS
 endef
 LDFLAGS:=$(strip $(LDFLAGS))
 
-.PHONY: clean
-clean:
-	rm -rf $(OUTPUT_BINARY)
-
 .PHONY: build
-build: clean
+build:
 	CGO_ENABLED=0 \
 	go \
 	build \
@@ -28,6 +24,10 @@ build: clean
 	-ldflags="-s -w -extldflags \"-static\" $(LDFLAGS)" \
 	-o "${OUTPUT_BINARY}" \
 	main.go
+
+.PHONY: clean
+clean:
+	rm -rf $(OUTPUT_BINARY)
 
 .PHONY: run
 run: build
@@ -51,3 +51,21 @@ sync-deps:
 .PHONY: $pull
 $pull:
 	git pull --rebase
+
+.PHONY: dev/run
+dev/run: dev/build
+	./${OUTPUT_BINARY}
+
+.PHONY: dev/build
+dev/build:
+	go \
+	build \
+	-tags osusergo,netgo \
+	-ldflags="-s -w -extldflags \"-static\" $(LDFLAGS)" \
+	-o "${OUTPUT_BINARY}" \
+	main.go
+
+# REQUIRED: go install github.com/cosmtrek/air@latest
+.PHONY: dev/watch
+dev/watch:
+	air
