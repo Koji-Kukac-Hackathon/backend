@@ -21,7 +21,6 @@ func AddParkingSpotService(parkingSpot *ParkingSpot) (ParkingSpot, error) {
 	db := database.DatabaseProvider().Client()
 
 	var err error
-
 	fmt.Println(*parkingSpot)
 
 	if err != nil {
@@ -31,4 +30,25 @@ func AddParkingSpotService(parkingSpot *ParkingSpot) (ParkingSpot, error) {
 	db.Create(&parkingSpot)
 
 	return *parkingSpot, nil
+}
+
+func GetParkingSpotService(id string) (ParkingSpot, error) {
+	db := database.DatabaseProvider().Client()
+
+	var parkingSpot ParkingSpot
+
+	retval := db.Table("parking_spots").Where("id = ?", id).Order("occupied_times_stamp DESC").First(&parkingSpot)
+
+	if retval.Error != nil {
+		return ParkingSpot{}, errors.New("no such parking spot")
+	}
+
+	return parkingSpot, nil
+}
+
+func UpdateParkingSpotService(parkingSpot *ParkingSpot) {
+	db := database.DatabaseProvider().Client()
+
+	db.Model(ParkingSpot{}).Where("id = ?", parkingSpot.Id).Updates(parkingSpot)
+
 }

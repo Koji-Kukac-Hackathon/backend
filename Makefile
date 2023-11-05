@@ -52,9 +52,6 @@ sync-deps:
 $pull:
 	git pull --rebase
 
-.PHONY: dev/run
-dev/run: dev/build
-	./${OUTPUT_BINARY}
 
 .PHONY: dev/build
 dev/build:
@@ -63,9 +60,6 @@ dev/build:
 	-tags osusergo,netgo \
 	-ldflags="-s -w -extldflags \"-static\" $(LDFLAGS)" \
 	-o "${OUTPUT_BINARY}" \
+
 	main.go
 
-# REQUIRED: go install github.com/cosmtrek/air@latest
-.PHONY: dev/watch
-dev/watch:
-	air
