@@ -1,0 +1,6 @@
+zgrabi-mjesto.titan.ji0.li,
+api.zgrabi-mjesto.loc {
+	tls internal
+
+	reverse_proxy localhost:3000
+}

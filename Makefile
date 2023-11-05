@@ -13,12 +13,8 @@ define LDFLAGS
 endef
 LDFLAGS:=$(strip $(LDFLAGS))
 
-.PHONY: clean
-clean:
-	rm -rf $(OUTPUT_BINARY)
-
 .PHONY: build
-build: clean
+build:
 	CGO_ENABLED=0 \
 	go \
 	build \
@@ -28,6 +24,10 @@ build: clean
 	-ldflags="-s -w -extldflags \"-static\" $(LDFLAGS)" \
 	-o "${OUTPUT_BINARY}" \
 	main.go
+
+.PHONY: clean
+clean:
+	rm -rf $(OUTPUT_BINARY)
 
 .PHONY: run
 run: build
@@ -52,6 +52,7 @@ sync-deps:
 $pull:
 	git pull --rebase
 
+
 .PHONY: dev/build
 dev/build:
 	go \
@@ -59,4 +60,6 @@ dev/build:
 	-tags osusergo,netgo \
 	-ldflags="-s -w -extldflags \"-static\" $(LDFLAGS)" \
 	-o "${OUTPUT_BINARY}" \
+
 	main.go
+

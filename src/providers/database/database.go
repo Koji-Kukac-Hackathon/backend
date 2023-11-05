@@ -8,8 +8,6 @@ import (
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
-
-	"zgrabi-mjesto.hr/backend/src/entities/product"
 )
 
 type databaseProvider struct {
@@ -50,24 +48,15 @@ func (p databaseProvider) Register() (err error) {
 	db_.conn, err = gorm.Open(
 		mysql.Open(os.Getenv("DATABASE_URL")),
 		&gorm.Config{
-			Logger: logger_,
+			Logger:                                   logger_,
+			DisableForeignKeyConstraintWhenMigrating: true,
 		},
 	)
 
-	db_.log("Connected to PostgreSQL")
+	db_.log("Connected to to database")
 	if err != nil {
 		return err
 	}
-
-	db_.log("Running the migrations...")
-	err = db_.conn.AutoMigrate(
-		&product.Model{},
-	)
-	if err != nil {
-		return err
-	}
-
-	db_.log("Done with migrations")
 
 	return nil
 }
