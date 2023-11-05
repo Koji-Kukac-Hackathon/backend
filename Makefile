@@ -60,6 +60,8 @@ dev/build:
 	-tags osusergo,netgo \
 	-ldflags="-s -w -extldflags \"-static\" $(LDFLAGS)" \
 	-o "${OUTPUT_BINARY}" \
-
 	main.go
 
+.PHONY: dev/run
+dev/run: dev/build
+	./${OUTPUT_BINARY}

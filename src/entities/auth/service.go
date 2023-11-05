@@ -44,6 +44,8 @@ func (service) Register(registerData *RegisterData) (err error) {
 			return err
 		}
 
+		fmt.Printf("\n===============================================\nUser created: %+v\n\n===============================================\n", newUser)
+
 		newAccount := Account{
 			UserId:            newUser.ID,
 			AccountType:       account.AccountTypeLocal,
@@ -54,6 +56,7 @@ func (service) Register(registerData *RegisterData) (err error) {
 		if tx.Create(&newAccount).Error != nil {
 			return err
 		}
+		fmt.Printf("\n===============================================\nAccount created: %+v\n\n===============================================\n", newAccount)
 
 		return nil
 	})
@@ -100,6 +103,61 @@ func (service) Login(loginData *LoginData) (user *User, err error) {
 	}
 
 	user = &existingUser
+
+	return
+}
+
+func (service) EditUser(userId uint, editUserData *UpdateUserData) (err error) {
+	db := database.DatabaseProvider().Client()
+
+	err = db.Transaction(func(tx *gorm.DB) (err error) {
+		var dbUser *User
+		err = db.Model(&User{}).Preload("Accounts").Where("id = ?", userId).First(&dbUser).Error
+		if dbUser == nil {
+			return
+		}
+
+		dbUser.Name = editUserData.Name
+		dbUser.Email = editUserData.Email
+		dbUser.Role = editUserData.Role
+
+		err = db.Save(dbUser).Error
+		if err != nil {
+			return
+		}
+
+		var credAccount *Account
+		for _, a := range dbUser.Accounts {
+			if a.Provider == "credentials" {
+				credAccount = &a
+				break
+			}
+		}
+
+		if credAccount == nil {
+			return fmt.Errorf("account for provider %s not found", "credentials")
+		}
+
+		hashedPassword, err := user.Service.HashPassword(editUserData.Password)
+		if err != nil {
+			return
+		}
+
+		credAccount.RefreshToken = &hashedPassword
+		err = db.Save(credAccount).Error
+
+		return
+	})
+
+	return
+}
+
+func (service) DeleteUser(userId uint) (err error) {
+	db := database.DatabaseProvider().Client()
+
+	delUser := User{}
+	delUser.ID = userId
+	err = db.Unscoped().Delete(&delUser).Error
 
 	return
 }

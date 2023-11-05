@@ -19,10 +19,29 @@ func databaseTablesInit() {
 		return
 	}
 	fmt.Println(string(out))
-	parkingSpot.AddAllParkingSpotController(out)
+
+	go func() {
+		parkingSpot.AddAllParkingSpotController(out)
+	}()
 
 	parkingSpot.Init()
 	auth.Init()
+}
+
+func CORSMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE, PATCH")
+
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
+
+		c.Next()
+	}
 }
 
 func Run() {
@@ -31,11 +50,21 @@ func Run() {
 
 	r := gin.New()
 
+	r.Use(CORSMiddleware())
+
 	{
 		authRoute := r.Group("/auth")
 		authRoute.POST("/login", auth.Controller.Login)
 		authRoute.POST("/register", auth.Controller.Register)
 		authRoute.GET("/user", auth.RequireAuthMiddleware(), auth.Controller.GetUser)
+	}
+
+	{
+		adminRoute := r.Group("/admin")
+		adminRoute.Use(auth.RequireAdminMiddleware())
+		adminRoute.GET("/users", auth.Controller.ListUsers)
+		adminRoute.POST("/users/:id", auth.Controller.UpdateUser)
+		adminRoute.DELETE("/users/:id", auth.Controller.DeleteUser)
 	}
 
 	r.GET("/ping", func(ctx *gin.Context) {
