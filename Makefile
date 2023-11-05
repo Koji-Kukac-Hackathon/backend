@@ -51,3 +51,12 @@ sync-deps:
 .PHONY: $pull
 $pull:
 	git pull --rebase
+
+.PHONY: dev/build
+dev/build:
+	go \
+	build \
+	-tags osusergo,netgo \
+	-ldflags="-s -w -extldflags \"-static\" $(LDFLAGS)" \
+	-o "${OUTPUT_BINARY}" \
+	main.go

@@ -25,11 +25,12 @@ var NotFoundParkingSpot = ParkingSpotError{
 
 type ParkingSpot struct {
 	Id                 string    `json:"id"`
-	Latitude           int64     `json:"latitude"`
-	Longitude          int64     `json:"longitude"`
+	Latitude           float64   `json:"latitude"`
+	Longitude          float64   `json:"longitude"`
 	ParkigSpotZone     string    `json:"parkingSpotZone"`
 	Occupied           bool      `json:"occupied"`
 	OccupiedTimesStamp time.Time `json:"occupiedTimestamp"`
+	LastDataReceived   time.Time `json:"lastDataReceived"`
 }
 
 type ParkingSpotError struct {

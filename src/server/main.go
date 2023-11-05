@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"os/exec"
 
 	"github.com/gin-gonic/gin"
 	"zgrabi-mjesto.hr/backend/src/config"
@@ -9,12 +10,23 @@ import (
 )
 
 func databaseTablesInit() {
+
+	curl := exec.Command("curl", "https://hackathon.kojikukac.com/api/ParkingSpot/getAll", "-X", "GET", "-H", "accept: application/json", "-H", "Api-Key: b7e43abf-190c-4b66-bb4d-909659e125db")
+	out, err := curl.Output()
+	if err != nil {
+		fmt.Println("erorr", err)
+		return
+	}
+	fmt.Println(string(out))
+	parkingSpot.AddAllParkingSpotController(out)
+
 	parkingSpot.Init()
 }
 
 func Run() {
 
 	databaseTablesInit()
+	parkingSpot.Consume()
 
 	r := gin.New()
 
