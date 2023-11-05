@@ -27,7 +27,7 @@ func Consume() {
 
 	exit := make(chan struct{})
 
-	var buffer [1000]ParkingSpotScraped
+	var buffer [90000]ParkingSpotScraped
 	buffpointer := 0
 
 	ticker := time.NewTicker(2 * time.Second)
@@ -52,11 +52,12 @@ func Consume() {
 
 					fmt.Println("--------", parkingSpot)
 					parkingSpot.Occupied = buffer[i].IsOccupied
+					fmt.Println(parkingSpot)
 					parkingSpot.LastDataReceived = time.Now()
 					if parkingSpot.Occupied == true {
 						parkingSpot.OccupiedTimesStamp = time.Now()
 					}
-
+					fmt.Println(parkingSpot)
 					UpdateParkingSpotService(&parkingSpot)
 				}
 				buffpointer = 0

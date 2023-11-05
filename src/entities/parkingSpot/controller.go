@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"zgrabi-mjesto.hr/backend/src/server/response"
 )
 
 func FindAllParkingSpotsController(ctx *gin.Context) {
@@ -50,7 +51,7 @@ func AddAllParkingSpotController(data []byte) {
 			OccupiedTimesStamp: time,
 		}
 
-		UpdateParkingSpotService(&parkingSpotCurrent)
+		UpdateParkingSpotServiceWithGeoData(&parkingSpotCurrent)
 	}
 }
 
@@ -77,4 +78,24 @@ func AddParkingSpotController(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, parkingSpot)
 
+}
+
+func GetParkingSpotsWithFilters(ctx *gin.Context) {
+	var filters Filters
+
+	err := ctx.ShouldBindQuery(&filters)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, response.Error("wrong filters"))
+		return
+	}
+
+	parkingSpots, err := FindAllParkingSpotsWithFilters(&filters)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, response.Error("could not find parking spots with filters"))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, parkingSpots)
 }

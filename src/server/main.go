@@ -60,5 +60,7 @@ func Run() {
 
 	r.POST("/parking-spot", parkingSpot.AddParkingSpotController)
 
+	r.GET("/parking-spot/filters", parkingSpot.GetParkingSpotsWithFilters)
+
 	r.Run(fmt.Sprintf("%s:%d", config.Config.Host, config.Config.Port))
 }
