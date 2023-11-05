@@ -31,6 +31,7 @@ type ParkingSpot struct {
 	Occupied           bool      `json:"occupied"`
 	OccupiedTimesStamp time.Time `json:"occupiedTimestamp"`
 	LastDataReceived   time.Time `json:"lastDataReceived"`
+	Price              float32   `json:"price"`
 }
 
 type ParkingSpotError struct {

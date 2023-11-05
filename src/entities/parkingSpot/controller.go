@@ -50,7 +50,16 @@ func AddAllParkingSpotController(data []byte) {
 			Occupied:           parkingSpot.Occupied,
 			OccupiedTimesStamp: time,
 		}
-
+		switch parkingSpotCurrent.ParkigSpotZone {
+		case "Zone1":
+			parkingSpotCurrent.Price = 2
+		case "Zone2":
+			parkingSpotCurrent.Price = 1.5
+		case "Zone3":
+			parkingSpotCurrent.Price = 1
+		case "Zone4":
+			parkingSpotCurrent.Price = 0.75
+		}
 		UpdateParkingSpotServiceWithGeoData(&parkingSpotCurrent)
 	}
 }

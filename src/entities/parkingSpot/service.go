@@ -68,38 +68,33 @@ func UpdateParkingSpotServiceWithGeoData(parkingSpot *ParkingSpot) {
 		"latitude":             parkingSpot.Latitude,
 		"occupied":             parkingSpot.Occupied,
 		"occupied_times_stamp": parkingSpot.OccupiedTimesStamp,
+		"price":                parkingSpot.Price,
 	}
 
 	db.Model(ParkingSpot{}).Where("id = ?", parkingSpot.Id).Updates(updateData)
 
 }
 
-func GetAllParkingSpotsWithSameZone(zone string) ([]ParkingSpot, error) {
+func GetAllParkingSpotsWithFilters(zone string, priceMin float32, priceMax float32, latMin float32, latMax float32, longMin float32, longMax float32) ([]ParkingSpot, error) {
 
 	db := database.DatabaseProvider().Client()
 
 	var parkingSpots []ParkingSpot
 
-	err := db.Model(ParkingSpot{}).Where("parkig_spot_zone = ?", zone).Find(&parkingSpots)
+	if zone != "" {
+		// err := db.Table("parking_spots").Where("'parkig_spot_zone' = ?", zone).Where("price >= ? and ? >= price", priceMin, priceMax).Where("latitude >= ? and latitude <= ?", latMin, latMax).Where("longitude >= ? and longitude <= ?", longMin, longMax).Find(&parkingSpots)
 
-	if err.Error != nil {
-		return []ParkingSpot{}, err.Error
+		err := db.Model(ParkingSpot{}).Where("parkig_spot_zone = ?", zone).Where("price >= ? and ? >= price", priceMin, priceMax).Find(&parkingSpots)
+		if err.Error != nil {
+			return []ParkingSpot{}, err.Error
+		}
+	} else {
+		err := db.Model(ParkingSpot{}).Where("price < ?", priceMax).Where("price > ?", priceMin).Find(&parkingSpots)
+		if err.Error != nil {
+			return []ParkingSpot{}, err.Error
+		}
 	}
 
 	return parkingSpots, nil
 
-}
-
-func GetAllParkingSpotsWithOccupation(occupation bool) ([]ParkingSpot, error) {
-	db := database.DatabaseProvider().Client()
-
-	var parkingSpots []ParkingSpot
-
-	err := db.Model(ParkingSpot{}).Where("occupied =?", occupation).Find(&parkingSpots)
-
-	if err.Error != nil {
-		return []ParkingSpot{}, err.Error
-	}
-
-	return parkingSpots, nil
 }
